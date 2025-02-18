@@ -1,6 +1,5 @@
 package com.assolink
 
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
@@ -8,10 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.assolink.Fragments.EventFragment
-import com.assolink.Fragments.HomeFragment
-import com.assolink.Fragments.MapFragment
-import com.assolink.Fragments.ProfileFragment
+import com.assolink.fragments.EventFragment
+import com.assolink.fragments.HomeFragment
+import com.assolink.fragments.MapFragment
+import com.assolink.fragments.ProfileFragment
 
 
 class MainActivity : AppCompatActivity() {
