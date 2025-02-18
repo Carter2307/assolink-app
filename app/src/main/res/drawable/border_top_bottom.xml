@@ -1,0 +1,17 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Bottom border -->
+    <item android:gravity="bottom">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/gray" />
+            <size android:height="1dp" />
+        </shape>
+    </item>
+    <!-- Main background with insets for borders -->
+    <item>
+        <inset android:insetTop="1dp" android:insetBottom="1dp">
+            <shape android:shape="rectangle">
+                <solid android:color="@android:color/white" />
+            </shape>
+        </inset>
+    </item>
+</layer-list>
