@@ -1,9 +1,11 @@
 package com.assolink.pages
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -28,6 +30,13 @@ class RegisterActivity : AppCompatActivity() {
 
         // Activer le bouton de retour dans la barre d'action
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        // Ajouter le gestionnaire de clic pour le lien vers la page de connexion
+        findViewById<TextView>(R.id.tvLoginLink).setOnClickListener {
+            // Démarrer RegisterActivity
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish() // Optionnel : ferme l'activité actuelle
+        }
 
         val etFirstName = findViewById<EditText>(R.id.etFirstName)
         val etLastName = findViewById<EditText>(R.id.etLastName)

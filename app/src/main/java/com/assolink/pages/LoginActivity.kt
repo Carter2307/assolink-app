@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
         // Activer le bouton de retour
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Ajouter le gestionnaire de clic pour le lien d'inscription
+        // Ajouter le gestionnaire de clic pour le lien vers la page d'inscription
         findViewById<TextView>(R.id.tvRegisterLink).setOnClickListener {
             // Démarrer RegisterActivity
             startActivity(Intent(this, RegisterActivity::class.java))
