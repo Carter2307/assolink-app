@@ -23,6 +23,9 @@ interface UserDao {
             "last_name LIKE :last LIMIT 1")
     fun findByName(first: String, last: String): UserEntity
 
+    @Query("SELECT * FROM user WHERE email = :email")
+    suspend fun getUserByEmail(email: String): UserEntity?
+
     @Insert
     fun insertAll(vararg users: UserEntity)
 
