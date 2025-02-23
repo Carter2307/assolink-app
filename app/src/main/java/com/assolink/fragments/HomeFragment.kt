@@ -1,5 +1,6 @@
 package com.assolink.fragments
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,8 +12,16 @@ import com.assolink.R
 import com.assolink.views.assoCard.Asso
 import com.assolink.views.assoCard.AssoCardAdapter
 
+import android.content.Context
+import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
+import com.assolink.db.DBInstance
+import kotlinx.coroutines.launch
+
 
 class HomeFragment : Fragment() {
+
+    private lateinit var sharedPref: SharedPreferences
     private lateinit var assos: ArrayList<Asso>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,11 +29,30 @@ class HomeFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+
+        sharedPref = requireContext().getSharedPreferences("user_session", Context.MODE_PRIVATE)
+
+        // Mettre à jour le header
+        val tvFirstName = view.findViewById<TextView>(R.id.tvFirstName)
+        val tvLastName = view.findViewById<TextView>(R.id.tvLastName)
+
+        val userEmail = sharedPref.getString("user_email", null)
+        if (userEmail != null) {
+            lifecycleScope.launch {
+                val user = DBInstance.getDatabase(requireContext()).userDao().getUserByEmail(userEmail)
+                user?.let {
+                    tvFirstName.text = it.firstName
+                    tvLastName.text = it.lastName
+                }
+            }
+        }
+
 
         assos = ArrayList(
             listOf(
