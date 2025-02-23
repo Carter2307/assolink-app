@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.assolink.MainActivity
 import com.assolink.R
 import com.assolink.db.DBInstance
 import com.assolink.db.entities.UserEntity
@@ -87,6 +88,7 @@ class RegisterActivity : AppCompatActivity() {
                     }
                 }
             }
+
         }
     }
 
