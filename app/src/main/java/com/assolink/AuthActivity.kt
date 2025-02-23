@@ -6,19 +6,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.assolink.databinding.ActivityMainBinding
+import com.assolink.databinding.ActivityAuthBinding
 import com.assolink.db.DBInstance
 import com.assolink.pages.LoginActivity
 import com.assolink.pages.RegisterActivity
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+class AuthActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityAuthBinding
 
     // Called when MainActivity is created
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         enableEdgeToEdge()
