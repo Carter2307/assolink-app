@@ -1,29 +1,51 @@
 package com.assolink
 
-import android.graphics.Color
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.assolink.Fragments.EventFragment
-import com.assolink.Fragments.HomeFragment
-import com.assolink.Fragments.MapFragment
-import com.assolink.Fragments.ProfileFragment
+import com.assolink.fragments.EventFragment
+import com.assolink.fragments.HomeFragment
+import com.assolink.fragments.MapFragment
+import com.assolink.fragments.ProfileFragment
+import com.assolink.pages.LoginActivity
 
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var sharedPref: SharedPreferences
     private lateinit var navHome: LinearLayout
     private lateinit var navEvent: LinearLayout
     private lateinit var navMap: LinearLayout
     private lateinit var navProfile: LinearLayout
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        // Initialisation des SharedPreferences
+        sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+
+        // DEBUG : Vérifier la valeur stockée
+        Log.d("AUTH_CHECK", "is_logged_in: ${sharedPref.getBoolean("is_logged_in", false)}")
+
+        // Vérification de connexion
+        if(!isUserLoggedIn()) {
+            Log.d("AUTH_FLOW", "Redirection vers AuthActivity")
+            redirectToAuth()
+            return // IMPORTANT : Bloque l'exécution du reste du code
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -97,6 +119,25 @@ class MainActivity : AppCompatActivity() {
                 text.alpha = 0.5f;
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (!isUserLoggedIn()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
+    }
+
+    // Nouvelle méthode de vérification
+    private fun isUserLoggedIn(): Boolean {
+        return sharedPref.getBoolean("is_logged_in", false)
+    }
+
+    // Nouvelle méthode de redirection
+    private fun redirectToAuth() {
+        startActivity(Intent(this, AuthActivity::class.java))
+        finish()
     }
 
 
