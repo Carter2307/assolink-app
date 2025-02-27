@@ -1,11 +1,10 @@
 package com.assolink.data.model.event
 
 data class Event(
-    val id: Long,
-    val associationId: Long,
+    val id: String,
     val title: String,
     val description: String,
-    val startDate: String,
-    val endDate: String,
-    val location: String
+    val date: Long,
+    val location: String,
+    val associationId: String
 )

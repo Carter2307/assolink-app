@@ -1,11 +1,14 @@
 package com.assolink.data.model.association
 
 data class Association(
-    val id: Int,
+    val id: String,
     val name: String,
     val description: String,
-    val logo: String,
     val address: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val logoUrl: String,
+    val email: String,
+    val phone: String,
+    val category: String? = null
 )

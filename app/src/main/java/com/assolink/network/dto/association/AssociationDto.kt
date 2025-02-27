@@ -1,11 +1,13 @@
 package com.assolink.network.dto.association
 
 data class AssociationDto(
-    val id: Int,
+    val id: String,
     val name: String,
     val description: String,
-    val logo: String,
     val address: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val logoUrl: String,
+    val email: String,
+    val phone: String,
 )

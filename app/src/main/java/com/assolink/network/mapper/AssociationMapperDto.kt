@@ -8,9 +8,11 @@ fun mapAssociationDtoToAssociationModel(dto: AssociationDto): Association {
         dto.id,
         dto.name,
         dto.description,
-        dto.logo,
         dto.address,
         dto.latitude,
-        dto.longitude
+        dto.longitude,
+        dto.logoUrl,
+        dto.email,
+        dto.phone
     )
 }

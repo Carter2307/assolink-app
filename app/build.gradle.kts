@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -26,6 +27,11 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -55,9 +61,19 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
+    implementation(libs.glide)
 
     // VM
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
+    // ASYNC
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+
+
+
+    // MAPS
+    implementation(libs.play.services.maps)
+    implementation(libs.android.maps.utils)
     implementation(libs.androidx.swiperefreshlayout)
 }

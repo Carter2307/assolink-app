@@ -1,6 +1,5 @@
-package com.assolink
+package com.assolink.pages
 
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
@@ -8,10 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.assolink.Fragments.EventFragment
-import com.assolink.Fragments.HomeFragment
-import com.assolink.Fragments.MapFragment
-import com.assolink.Fragments.ProfileFragment
+import com.assolink.views.fragments.EventFragment
+import com.assolink.views.fragments.HomeFragment
+import com.assolink.views.fragments.MapFragment
+import com.assolink.views.fragments.ProfileFragment
+import com.assolink.R
 
 
 class MainActivity : AppCompatActivity() {
@@ -36,30 +36,20 @@ class MainActivity : AppCompatActivity() {
         navMap = findViewById(R.id.nav_map)
         navProfile = findViewById(R.id.nav_profil)
 
-        // Charge la page par défaut (la home page)
-        loadFragment(HomeFragment())
-        navHome.isSelected = true
-        deselectOtherNavItem(navHome,  getAllBottomNavItems())
+        // Définir les listeners
+        navHome.setOnClickListener { loadFragment(HomeFragment()) }
+        navEvent.setOnClickListener { loadFragment(EventFragment()) }
+        navMap.setOnClickListener {
+            // Naviguer vers l'écran de la carte
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, MapFragment())
+                .commit()
+        }
+        navProfile.setOnClickListener { loadFragment(ProfileFragment()) }
 
-        val navigationMap = HashMap<LinearLayout, Fragment>();
-        navigationMap.put(navHome, HomeFragment())
-        navigationMap.put(navEvent, EventFragment())
-        navigationMap.put(navMap, MapFragment())
-        navigationMap.put(navProfile, ProfileFragment())
-
-        // Afficher la bonne page lors du click
-        // Mettre l'opacité du bouton actif à 100%
-        for (view in navigationMap.keys) {
-            view.setOnClickListener {
-                val navItems = getAllBottomNavItems()
-                deselectOtherNavItem(view, navItems)
-                view.isSelected = true
-                val  img  = view.getChildAt(0)
-                val text = view.getChildAt(1)
-                img.alpha = 1f;
-                text.alpha = 1f;
-                navigationMap[view]?.let { frag -> loadFragment(frag) }
-            }
+        // Charger le fragment par défaut
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment())
         }
 
 
