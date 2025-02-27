@@ -67,7 +67,6 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.glide)
-    annotationProcessor(libs.compiler)
 
     // VM & LIFECYCLE
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -82,12 +81,10 @@ dependencies {
     // MAPS
     implementation(libs.play.services.maps)
     implementation(libs.android.maps.utils)
-    implementation(libs.androidx.swiperefreshlayout)
 
 
     // room
-    val room_version = "2.6.1"
-    implementation("androidx.room:room-runtime:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 }

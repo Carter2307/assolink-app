@@ -1,10 +1,10 @@
 package com.assolink.di
 
-import com.assolink.repository.AssociationRepository
-import com.assolink.viewmodel.MapViewModel
-import com.assolink.viewmodel.AssociationDetailsViewModel
-import com.assolink.views.fragments.MapFragment
-import com.assolink.views.fragments.AssociationDetailsFragment
+import com.assolink.data.repositories.AssociationRepository
+import com.assolink.ui.viewmodels.MapViewModel
+import com.assolink.ui.viewmodels.AssociationDetailsViewModel
+import com.assolink.ui.fragments.MapFragment
+import com.assolink.ui.fragments.AssociationDetailsFragment
 import org.koin.androidx.fragment.dsl.fragment
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
