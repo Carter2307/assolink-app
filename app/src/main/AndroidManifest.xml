@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Regrouper toutes les permissions nécessaires -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -19,17 +20,21 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <!-- Point d'entrée: AuthActivity pour le login/register -->
         <activity
-            android:name=".pages.MainActivity"
+            android:name=".AuthActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Autres activités nécessaires -->
+        <activity android:name=".pages.RegisterActivity" />
+        <activity android:name=".pages.LoginActivity" />
+        <activity android:name=".pages.MainActivity" />
         <activity android:name=".pages.MapActivity" />
         <activity android:name=".pages.AssociationDetailsActivity" />
     </application>
-
 </manifest>

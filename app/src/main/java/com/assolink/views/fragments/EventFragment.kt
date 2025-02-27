@@ -1,4 +1,8 @@
+<<<<<<<< HEAD:app/src/main/java/com/assolink/views/fragments/EventFragment.kt
 package com.assolink.views.fragments
+========
+package com.assolink.fragments
+>>>>>>>> dev:app/src/main/java/com/assolink/fragments/EventFragment.kt
 
 import android.os.Bundle
 import android.view.LayoutInflater
