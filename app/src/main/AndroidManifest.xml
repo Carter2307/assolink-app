@@ -18,7 +18,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="${MAPS_API_KEY}" />
 
         <!-- Point d'entrée: AuthActivity pour le login/register -->
         <activity
@@ -34,7 +34,6 @@
         <activity android:name=".ui.activities.RegisterActivity" />
         <activity android:name=".ui.activities.LoginActivity" />
         <activity android:name=".ui.activities.MainActivity" />
-        <activity android:name=".ui.activities.MapActivity" />
         <activity android:name=".ui.activities.AssociationDetailsActivity" />
     </application>
 </manifest>
