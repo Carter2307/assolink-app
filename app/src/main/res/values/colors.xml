@@ -3,5 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#DFDFDF</color>
-    <color name="link_color">#FF4081</color>
+    <color name="link_color">#000000</color>
+    <color name="background_color">#F5F5F5</color>
+    <color name="logout_button_color">#FF5252</color>
 </resources>

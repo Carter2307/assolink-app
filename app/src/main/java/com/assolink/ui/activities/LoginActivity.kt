@@ -36,6 +36,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        // Style déjà défini dans le XML, rien à faire ici
+
         binding.btnLogin.setOnClickListener {
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
@@ -45,14 +47,33 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        binding.tvRegisterLink.setOnClickListener {
+        binding.tvNoAccount.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
             finish()
         }
 
         binding.tvForgotPassword.setOnClickListener {
-            showForgotPasswordDialog()
+            showResetPasswordDialog()
         }
+    }
+
+    private fun showResetPasswordDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_forgot_password, null)
+        val emailInput = dialogView.findViewById<TextInputEditText>(R.id.etDialogEmail)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.forgot_password_title)
+            .setView(dialogView)
+            .setPositiveButton(R.string.send) { _, _ ->
+                val email = emailInput.text.toString().trim()
+                if (email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    authViewModel.resetPassword(email)
+                } else {
+                    showError(getString(R.string.error_invalid_email))
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun validateInputs(email: String, password: String): Boolean {
@@ -96,7 +117,6 @@ class LoginActivity : AppCompatActivity() {
                 }
                 is AuthState.PasswordResetSent -> {
                     binding.progressBar.isVisible = false
-                    binding.btnLogin.isEnabled = true
                     Snackbar.make(binding.root, R.string.password_reset_sent, Snackbar.LENGTH_LONG).show()
                 }
                 else -> {
@@ -114,25 +134,6 @@ class LoginActivity : AppCompatActivity() {
     private fun navigateToHome() {
         startActivity(Intent(this, MainActivity::class.java))
         finishAffinity()
-    }
-
-    private fun showForgotPasswordDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_forgot_password, null)
-        val etEmail = dialogView.findViewById<TextInputEditText>(R.id.etDialogEmail)
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.forgot_password_title)
-            .setView(dialogView)
-            .setPositiveButton(R.string.send) { _, _ ->
-                val email = etEmail.text.toString().trim()
-                if (email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    authViewModel.resetPassword(email)
-                } else {
-                    showError(getString(R.string.error_invalid_email))
-                }
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
     }
 
     override fun onSupportNavigateUp(): Boolean {

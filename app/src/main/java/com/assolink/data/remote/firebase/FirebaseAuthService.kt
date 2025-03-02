@@ -23,17 +23,17 @@ class FirebaseAuthService {
             }
         }
 
-    suspend fun register(email: String, password: String, username: String): Result<FirebaseUser> =
+    suspend fun register(email: String, password: String, username: String, address: String): Result<FirebaseUser> =
         withContext(Dispatchers.IO) {
             try {
                 val authResult = auth.createUserWithEmailAndPassword(email, password).await()
                 val user = authResult.user!!
-
-                // Créer le profil utilisateur dans Firestore
+                
                 val userProfile = hashMapOf(
                     "uid" to user.uid,
                     "email" to email,
                     "username" to username,
+                    "address" to address,
                     "createdAt" to FieldValue.serverTimestamp(),
                     "preferences" to emptyList<String>()
                 )

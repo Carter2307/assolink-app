@@ -1,9 +1,12 @@
 package com.assolink.data.repositories
 
+import android.content.Context
+import android.content.SharedPreferences
 import com.assolink.data.model.User
 import com.assolink.data.remote.Result
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -11,11 +14,38 @@ import kotlinx.coroutines.withContext
 
 class UserRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val context: Context
 ) {
     private val usersCollection = firestore.collection("users")
+    private val prefs: SharedPreferences = context.getSharedPreferences("assolink_prefs", Context.MODE_PRIVATE)
 
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
+
+    suspend fun getUserProfile(uid: String): Result<User> =
+        withContext(Dispatchers.IO) {
+            try {
+                val document = usersCollection.document(uid).get().await()
+
+                if (document.exists()) {
+                    val data = document.data ?: emptyMap()
+                    val user = User(
+                        id = uid,
+                        email = data["email"] as? String ?: "",
+                        username = data["username"] as? String ?: "",
+                        address = data["address"] as? String,
+                        preferences = (data["preferences"] as? List<String>) ?: emptyList(),
+                        favoriteAssociations = (data["favoriteAssociations"] as? List<String>) ?: emptyList(),
+                        registeredEvents = (data["registeredEvents"] as? List<String>) ?: emptyList()
+                    )
+                    Result.success(user)
+                } else {
+                    Result.failure(Exception("Profil utilisateur non trouvé"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
 
     suspend fun signIn(email: String, password: String): Result<User> =
         withContext(Dispatchers.IO) {
@@ -24,16 +54,7 @@ class UserRepository(
                 val firebaseUser = authResult.user
 
                 if (firebaseUser != null) {
-                    // Convertir en votre modèle User
-                    val user = User(
-                        id = firebaseUser.uid,
-                        email = firebaseUser.email ?: "",
-                        username = firebaseUser.displayName ?: "",
-                        preferences = emptyList(),
-                        favoriteAssociations = emptyList(),
-                        registeredEvents = emptyList()
-                    )
-                    Result.success(user)
+                    getUserProfile(firebaseUser.uid)
                 } else {
                     Result.failure(Exception("Authentification échouée"))
                 }
@@ -46,33 +67,42 @@ class UserRepository(
         withContext(Dispatchers.IO) {
             try {
                 val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-                val firebaseUser = authResult.user
+                val firebaseUser = authResult.user!!
 
-                if (firebaseUser != null) {
-                    // Sauvegarder les infos additionnelles dans Firestore
-                    val userDoc = mapOf(
-                        "uid" to firebaseUser.uid,
-                        "email" to email,
-                        "username" to username,
-                        "address" to address,
-                        "preferences" to emptyList<String>()
-                    )
+                val userProfile = mapOf(
+                    "uid" to firebaseUser.uid,
+                    "email" to email,
+                    "username" to username,
+                    "address" to address,
+                    "createdAt" to FieldValue.serverTimestamp(),
+                    "preferences" to emptyList<String>(),
+                    "favoriteAssociations" to emptyList<String>(),
+                    "registeredEvents" to emptyList<String>()
+                )
 
-                    usersCollection.document(firebaseUser.uid).set(userDoc).await()
+                usersCollection.document(firebaseUser.uid).set(userProfile).await()
 
-                    // Créer et retourner le modèle User
-                    val user = User(
-                        id = firebaseUser.uid,
-                        email = email,
-                        username = username,
-                        preferences = emptyList(),
-                        favoriteAssociations = emptyList(),
-                        registeredEvents = emptyList()
-                    )
-                    Result.success(user)
-                } else {
-                    Result.failure(Exception("Inscription échouée"))
-                }
+                val user = User(
+                    id = firebaseUser.uid,
+                    email = email,
+                    username = username,
+                    address = address,
+                    preferences = emptyList(),
+                    favoriteAssociations = emptyList(),
+                    registeredEvents = emptyList()
+                )
+                Result.success(user)
+
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+    suspend fun updateUserProfile(uid: String, updates: Map<String, Any>): Result<Unit> =
+        withContext(Dispatchers.IO) {
+            try {
+                usersCollection.document(uid).update(updates).await()
+                Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -89,5 +119,13 @@ class UserRepository(
         }
 
     fun signOut() = auth.signOut()
-}
 
+    // Préférences de thème
+    fun saveDarkModePreference(isDarkMode: Boolean) {
+        prefs.edit().putBoolean("dark_mode_enabled", isDarkMode).apply()
+    }
+
+    fun getDarkModePreference(): Boolean {
+        return prefs.getBoolean("dark_mode_enabled", false)
+    }
+}

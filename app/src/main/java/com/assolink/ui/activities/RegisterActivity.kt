@@ -47,11 +47,15 @@ class RegisterActivity : AppCompatActivity() {
 
                 binding.progressBar.isVisible = true
                 authViewModel.register(email, password, username, address)
+
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
             }
         }
 
         binding.tvLoginLink.setOnClickListener {
-            finish() // Retourne à l'écran précédent
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
     }
 

@@ -58,4 +58,18 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
             }
         }
     }
+
+    fun resetPassword(email: String) {
+        _authState.value = AuthState.Loading
+        viewModelScope.launch {
+            when (val result = userRepository.resetPassword(email)) {
+                is Result.Success -> _authState.value = AuthState.PasswordResetSent
+                is Result.Failure -> _authState.value = AuthState.Error(
+                    result.exception.message ?: "Erreur lors de la réinitialisation du mot de passe"
+                )
+            }
+        }
+    }
+
+
 }
