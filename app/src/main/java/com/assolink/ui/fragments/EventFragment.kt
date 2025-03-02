@@ -1,61 +1,111 @@
-
 package com.assolink.ui.fragments
-
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.assolink.R
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.assolink.databinding.FragmentEventBinding
+import com.assolink.ui.adapters.EventAdapter
+import com.assolink.ui.viewmodels.EventsViewModel
+import com.assolink.ui.viewmodels.RegistrationStatus
+import com.google.android.material.snackbar.Snackbar
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * A simple [Fragment] subclass.
- * Use the [EventFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class EventFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private var _binding: FragmentEventBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: EventsViewModel by viewModel()
+    private lateinit var eventAdapter: EventAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentEventBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
+        setupObservers()
+        setupListeners()
+
+        // Charger les événements
+        viewModel.loadUpcomingEvents()
+    }
+
+    private fun setupRecyclerView() {
+        eventAdapter = EventAdapter(
+            onEventClick = { event ->
+                // Naviguer vers les détails de l'événement
+                // Par exemple: findNavController().navigate(...)
+
+            },
+            onRegisterClick = { event ->
+                viewModel.registerForEvent(event.id, event.associationId)
+            }
+        )
+
+        binding.eventsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = eventAdapter
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_event, container, false)
-    }
+    private fun setupObservers() {
+        viewModel.events.observe(viewLifecycleOwner) { events ->
+            if (events.isEmpty()) {
+                binding.emptyStateLayout.visibility = View.VISIBLE
+                binding.eventsRecyclerView.visibility = View.GONE
+            } else {
+                binding.emptyStateLayout.visibility = View.GONE
+                binding.eventsRecyclerView.visibility = View.VISIBLE
+                eventAdapter.updateEvents(events)
+            }
+        }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment EventFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            EventFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            errorMessage?.let {
+                Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+            }
+        }
+
+        viewModel.registrationStatus.observe(viewLifecycleOwner) { status ->
+            when (status) {
+                is RegistrationStatus.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is RegistrationStatus.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    Snackbar.make(binding.root, "Opération réussie", Snackbar.LENGTH_SHORT).show()
+                }
+                is RegistrationStatus.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    Snackbar.make(binding.root, status.message, Snackbar.LENGTH_LONG).show()
                 }
             }
+        }
+    }
+
+    private fun setupListeners() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.loadUpcomingEvents(forceRefresh = true)
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

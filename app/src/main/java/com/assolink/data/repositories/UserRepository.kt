@@ -29,14 +29,24 @@ class UserRepository(
 
                 if (document.exists()) {
                     val data = document.data ?: emptyMap()
+
+                    fun Map<String, Any?>.getStringListSafely(key: String): List<String> {
+                        val value = this[key]
+                        return when {
+                            value == null -> emptyList()
+                            value is List<*> -> value.filterIsInstance<String>()
+                            else -> emptyList()
+                        }
+                    }
+
                     val user = User(
                         id = uid,
                         email = data["email"] as? String ?: "",
                         username = data["username"] as? String ?: "",
                         address = data["address"] as? String,
-                        preferences = (data["preferences"] as? List<String>) ?: emptyList(),
-                        favoriteAssociations = (data["favoriteAssociations"] as? List<String>) ?: emptyList(),
-                        registeredEvents = (data["registeredEvents"] as? List<String>) ?: emptyList()
+                        preferences = data.getStringListSafely("preferences"),
+                        favoriteAssociations = data.getStringListSafely("favoriteAssociations"),
+                        registeredEvents = data.getStringListSafely("registeredEvents")
                     )
                     Result.success(user)
                 } else {

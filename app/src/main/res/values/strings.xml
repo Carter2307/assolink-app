@@ -48,4 +48,5 @@
     <string name="profile_update_error">Erreur lors de la mise à jour du profil</string>
     <string name="description">Description</string>
     <string name="logo">Logo</string>
+    <string name="s_inscrire">S\'inscrire</string>
 </resources>
