@@ -10,6 +10,8 @@ import com.assolink.ui.fragments.MapFragment
 import com.assolink.ui.fragments.AssociationDetailsFragment
 import com.assolink.ui.viewmodels.AuthViewModel
 import com.assolink.ui.viewmodels.EventsViewModel
+import com.assolink.ui.viewmodels.ProfileViewModel
+import com.assolink.utils.ThemeManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.fragment.dsl.fragment
 import org.koin.core.module.dsl.viewModel
