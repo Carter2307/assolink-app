@@ -1,11 +1,9 @@
 package com.assolink
 
 import android.app.Application
-import com.assolink.di.authModule
 import com.assolink.di.coreModule
 import com.assolink.di.databaseModule
 import com.assolink.di.remoteModule
-import com.assolink.di.viewModelModule
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,7 +21,6 @@ class AssoLinkApplication : Application() {
 
         // Configuration pour le mode hors ligne Firestore
         val settings = FirebaseFirestoreSettings.Builder()
-            .setPersistenceEnabled(true)
             .build()
         FirebaseFirestore.getInstance().firestoreSettings = settings
 
@@ -32,11 +29,9 @@ class AssoLinkApplication : Application() {
             androidLogger(Level.DEBUG)
             androidContext(this@AssoLinkApplication)
             modules(listOf(
-                authModule,
                 databaseModule,
                 coreModule,
                 remoteModule,
-                viewModelModule
             ))
         }
     }
