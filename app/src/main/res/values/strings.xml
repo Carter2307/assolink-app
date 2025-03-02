@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AssoLink</string>
+    <string name="app_name">.AssoLinkApplication</string>
+    <string name="login_title">Se connecter</string>
+    <string name="register_title">Je crée mon compte</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Mot de passe</string>
+    <string name="login_button">Je me connecte</string>
+    <string name="register_button">Je m\'inscris</string>
+    <string name="no_account_link">Je n\'ai pas de compte</string>
+    <string name="already_have_account">J\'ai déjà un compte</string>
+    <string name="forgot_password">Mot de passe oublié ?</string>
+    <string name="first_name_hint">Nom</string>
+    <string name="last_name_hint">Prénom</string>
+    <string name="address_hint">Adresse</string>
+
+    <string name="error_invalid_email">L\'email n\'est pas valide</string>
+    <string name="error_required_field">Ce champ est requis</string>
+    <string name="error_password_too_short">Le mot de passe doit contenir au moins 6 caractères</string>
+    <string name="error_login_failed">Échec de connexion, vérifiez vos identifiants</string>
+    <string name="error_user_not_found">Aucun compte trouvé avec cet email</string>
+    <string name="error_network">Vérifiez votre connexion internet</string>
+    <string name="password_reset_sent">Email de réinitialisation envoyé</string>
+    <string name="forgot_password_title">Réinitialiser le mot de passe</string>
+    <string name="forgot_password_instructions">Nous vous enverrons un lien pour réinitialiser votre mot de passe à cette adresse email.</string>
+    <string name="send">Envoyer</string>
+    <string name="cancel">Annuler</string>
 </resources>

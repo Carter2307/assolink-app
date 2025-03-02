@@ -1,10 +1,10 @@
 package com.assolink
 
 import android.app.Application
+import com.assolink.di.authModule
 import com.assolink.di.coreModule
 import com.assolink.di.remoteModule
 import com.assolink.di.databaseModule
-import com.assolink.di.repositoryModule
 import com.assolink.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -23,8 +23,8 @@ class AssoLinkApplication : Application() {
                     coreModule,
                     remoteModule,
                     databaseModule,
-                    repositoryModule,
-                    viewModelModule
+                    viewModelModule,
+                    authModule
                 )
             )
         }
