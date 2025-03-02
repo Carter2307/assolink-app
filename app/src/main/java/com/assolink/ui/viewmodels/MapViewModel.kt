@@ -3,7 +3,7 @@ package com.assolink.ui.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.assolink.data.model.association.Association
+import com.assolink.data.model.Association
 import com.assolink.data.repositories.AssociationRepository
 
 class MapViewModel : ViewModel() {

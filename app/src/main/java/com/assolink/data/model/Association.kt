@@ -1,4 +1,4 @@
-package com.assolink.data.model.association
+ package com.assolink.data.model
 
 data class Association(
     val id: String,

@@ -1,109 +1,140 @@
 package com.assolink.ui.activities
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.util.Patterns
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import com.assolink.R
+import com.assolink.databinding.ActivityLoginBinding
+import com.assolink.ui.viewmodels.AuthState
+import com.assolink.ui.viewmodels.AuthViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var sharedPref: SharedPreferences
-    private lateinit var etEmail: EditText
-    private lateinit var etPassword: EditText
-    private lateinit var btnLogin: Button
+    private val authViewModel: AuthViewModel by viewModel()
+    private lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.login)
-
-        // Initialisation des SharedPreferences
-        sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupToolbar()
-        setupUIComponents()
-        setupLoginButton()
-        setupRegisterLink()
-
+        setupUI()
+        observeAuthState()
     }
 
     private fun setupToolbar() {
-        val toolbar = findViewById<Toolbar>(R.id.login_toolbar)
-        toolbar.title = ""
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.loginToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
-    private fun setupUIComponents() {
-        etEmail = findViewById(R.id.etEmail)
-        etPassword = findViewById(R.id.etPassword)
-        btnLogin = findViewById(R.id.btnLogin)
-    }
-
-    private fun setupLoginButton() {
-        btnLogin.setOnClickListener {
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
+    private fun setupUI() {
+        binding.btnLogin.setOnClickListener {
+            val email = binding.etEmail.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
 
             if (validateInputs(email, password)) {
-                // Simulation de connexion réussie
-                onLoginSuccess(email)
+                authViewModel.signIn(email, password)
             }
         }
-    }
 
-    // Ajouter le gestionnaire de clic pour le lien vers la page d'inscription
-    private fun setupRegisterLink() {
-        findViewById<TextView>(R.id.tvRegisterLink).setOnClickListener {
-            // Démarrer RegisterActivity
+        binding.tvRegisterLink.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
             finish()
+        }
+
+        binding.tvForgotPassword.setOnClickListener {
+            showForgotPasswordDialog()
         }
     }
 
     private fun validateInputs(email: String, password: String): Boolean {
-        return when {
-            email.isEmpty() -> {
-                showError("L'email est requis")
-                false
-            }
-            password.isEmpty() -> {
-                showError("Le mot de passe est requis")
-                false
-            }
-            else -> true
+        var isValid = true
+
+        if (email.isEmpty()) {
+            binding.tilEmail.error = getString(R.string.error_required_field)
+            isValid = false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = getString(R.string.error_invalid_email)
+            isValid = false
+        } else {
+            binding.tilEmail.error = null
         }
+
+        if (password.isEmpty()) {
+            binding.tilPassword.error = getString(R.string.error_required_field)
+            isValid = false
+        } else {
+            binding.tilPassword.error = null
+        }
+
+        return isValid
     }
 
-    private fun onLoginSuccess(email: String) {
-        // Sauvegarde de l'état de connexion
-        sharedPref.edit().apply {
-            putBoolean("is_logged_in", true)
-            putString("user_email", email)
-            apply()
+    private fun observeAuthState() {
+        authViewModel.authState.observe(this) { state ->
+            when (state) {
+                is AuthState.Loading -> {
+                    binding.progressBar.isVisible = true
+                    binding.btnLogin.isEnabled = false
+                }
+                is AuthState.Authenticated -> {
+                    binding.progressBar.isVisible = false
+                    navigateToHome()
+                }
+                is AuthState.Error -> {
+                    binding.progressBar.isVisible = false
+                    binding.btnLogin.isEnabled = true
+                    showError(state.message)
+                }
+                is AuthState.PasswordResetSent -> {
+                    binding.progressBar.isVisible = false
+                    binding.btnLogin.isEnabled = true
+                    Snackbar.make(binding.root, R.string.password_reset_sent, Snackbar.LENGTH_LONG).show()
+                }
+                else -> {
+                    binding.progressBar.isVisible = false
+                    binding.btnLogin.isEnabled = true
+                }
+            }
         }
-
-        // Attendre 100ms pour être sûr que les préférences sont sauvegardées
-        Handler(Looper.getMainLooper()).postDelayed({
-            // Redirection vers l'écran principal
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }, 100)
     }
 
     private fun showError(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
-    // Gérer le clic sur le bouton de retour
+    private fun navigateToHome() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finishAffinity()
+    }
+
+    private fun showForgotPasswordDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_forgot_password, null)
+        val etEmail = dialogView.findViewById<TextInputEditText>(R.id.etDialogEmail)
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.forgot_password_title)
+            .setView(dialogView)
+            .setPositiveButton(R.string.send) { _, _ ->
+                val email = etEmail.text.toString().trim()
+                if (email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    authViewModel.resetPassword(email)
+                } else {
+                    showError(getString(R.string.error_invalid_email))
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "348927744586",
+    "firebase_url": "https://assolink-project-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "assolink-project",
+    "storage_bucket": "assolink-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348927744586:android:51def37a76c6e4396aa4b3",
+        "android_client_info": {
+          "package_name": "com.assolink"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLP5hUyeVZsVULwFQU04fJ1mLXPEyM1Wg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

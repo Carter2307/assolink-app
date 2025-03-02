@@ -2,105 +2,133 @@ package com.assolink.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.util.Patterns
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import com.assolink.R
-import com.assolink.data.local.entities.UserEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.assolink.databinding.ActivityRegisterBinding
+import com.assolink.ui.viewmodels.AuthState
+import com.assolink.ui.viewmodels.AuthViewModel
+import com.google.android.material.snackbar.Snackbar
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterActivity : AppCompatActivity() {
 
+    private val authViewModel: AuthViewModel by viewModel()
+    private lateinit var binding: ActivityRegisterBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.register)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Configurer la Toolbar
-        val toolbar = findViewById<Toolbar>(R.id.register_toolbar)
-        toolbar.title = ""
-        setSupportActionBar(toolbar)
+        setupToolbar()
+        setupUI()
+        observeAuthState()
+    }
 
-        // Activer le bouton de retour dans la barre d'action
+    private fun setupToolbar() {
+        setSupportActionBar(binding.registerToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
 
-        // Ajouter le gestionnaire de clic pour le lien vers la page de connexion
-        findViewById<TextView>(R.id.tvLoginLink).setOnClickListener {
-            // Démarrer RegisterActivity
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish() // Optionnel : ferme l'activité actuelle
+    private fun setupUI() {
+        binding.btnRegister.setOnClickListener {
+            if (validateInputs()) {
+                val firstName = binding.etFirstName.text.toString().trim()
+                val lastName = binding.etLastName.text.toString().trim()
+                val email = binding.etEmail.text.toString().trim()
+                val password = binding.etPassword.text.toString().trim()
+                val address = binding.etAddress.text.toString().trim()
+
+                // Créer un username à partir des noms
+                val username = "$firstName $lastName"
+
+                binding.progressBar.isVisible = true
+                authViewModel.register(email, password, username, address)
+            }
         }
 
-        val etFirstName = findViewById<EditText>(R.id.etFirstName)
-        val etLastName = findViewById<EditText>(R.id.etLastName)
-        val etEmail = findViewById<EditText>(R.id.etEmail)
-        val etPassword = findViewById<EditText>(R.id.etPassword)
-        val etAddress = findViewById<EditText>(R.id.etAddress)
-        val btnRegister = findViewById<Button>(R.id.btnRegister)
-
-        btnRegister.setOnClickListener {
-
-            Toast.makeText(this, "Register button clicked", Toast.LENGTH_SHORT).show()
-
-            val firstName = etFirstName.text.toString()
-            val lastName = etLastName.text.toString()
-            val email = etEmail.text.toString()
-            val password = etPassword.text.toString()
-            val address = etAddress.text.toString()
-
-            // Input validation
-            if (firstName.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank() || address.isBlank()) {
-                Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Insert user into the database
-            val user = UserEntity(
-                email = email,
-                password = password,
-                firstName = firstName,
-                lastName = lastName,
-                address = address
-            )
-
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val db = DBInstance.db ?: DBInstance.init(applicationContext)
-                    Log.d("RegisterActivity", "Database instance acquired")
-                    db.userDao().insertAll(user)
-                    Log.d("RegisterActivity", "User inserted into database")
-                    runOnUiThread {
-                        Toast.makeText(this@RegisterActivity, "User registered successfully", Toast.LENGTH_SHORT).show()
-                        clearFields()
-                    }
-                } catch (e: Exception) {
-                    Log.e("RegisterActivity", "Error inserting user: ${e.message}")
-                    runOnUiThread {
-                        Toast.makeText(this@RegisterActivity, "Error registering user: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-
+        binding.tvLoginLink.setOnClickListener {
+            finish() // Retourne à l'écran précédent
         }
     }
 
-    // Gérer le clic sur le bouton de retour
+    private fun validateInputs(): Boolean {
+        var isValid = true
+
+        // Validation du prénom
+        if (binding.etFirstName.text.toString().trim().isEmpty()) {
+            binding.tilFirstName.error = getString(R.string.error_required_field)
+            isValid = false
+        } else {
+            binding.tilFirstName.error = null
+        }
+
+        // Validation du nom
+        if (binding.etLastName.text.toString().trim().isEmpty()) {
+            binding.tilLastName.error = getString(R.string.error_required_field)
+            isValid = false
+        } else {
+            binding.tilLastName.error = null
+        }
+
+        // Validation de l'email
+        val email = binding.etEmail.text.toString().trim()
+        if (email.isEmpty()) {
+            binding.tilEmail.error = getString(R.string.error_required_field)
+            isValid = false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = getString(R.string.error_invalid_email)
+            isValid = false
+        } else {
+            binding.tilEmail.error = null
+        }
+
+        // Validation du mot de passe
+        val password = binding.etPassword.text.toString()
+        if (password.isEmpty()) {
+            binding.tilPassword.error = getString(R.string.error_required_field)
+            isValid = false
+        } else if (password.length < 6) {
+            binding.tilPassword.error = getString(R.string.error_password_too_short)
+            isValid = false
+        } else {
+            binding.tilPassword.error = null
+        }
+
+        // Validation de l'adresse
+        if (binding.etAddress.text.toString().trim().isEmpty()) {
+            binding.tilAddress.error = getString(R.string.error_required_field)
+            isValid = false
+        } else {
+            binding.tilAddress.error = null
+        }
+
+        return isValid
+    }
+
+    private fun observeAuthState() {
+        authViewModel.authState.observe(this) { state ->
+            binding.progressBar.isVisible = false
+
+            when (state) {
+                is AuthState.Authenticated -> {
+                    // Rediriger vers MainActivity en attendant OnboardingActivity
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finishAffinity()
+                }
+                is AuthState.Error -> {
+                    Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
+                }
+                else -> { /* Ne rien faire */ }
+            }
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
-    }
-
-    private fun clearFields() {
-        findViewById<EditText>(R.id.etFirstName).text.clear()
-        findViewById<EditText>(R.id.etLastName).text.clear()
-        findViewById<EditText>(R.id.etEmail).text.clear()
-        findViewById<EditText>(R.id.etPassword).text.clear()
-        findViewById<EditText>(R.id.etAddress).text.clear()
     }
 }

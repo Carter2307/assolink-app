@@ -1,4 +1,4 @@
-package com.assolink.data.model.event
+package com.assolink.data.model
 
 data class Event(
     val id: String,

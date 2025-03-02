@@ -1,44 +1,92 @@
-// app/src/main/java/com/assolink/data/repository/UserRepository.kt
 package com.assolink.data.repositories
 
-import com.assolink.data.local.daos.UserDao
-import com.assolink.data.local.entities.UserEntity
+import com.assolink.data.model.User
+import com.assolink.data.remote.Result
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class UserRepository(private val userDao: UserDao) {
+class UserRepository(
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+    firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+) {
+    private val usersCollection = firestore.collection("users")
 
-    suspend fun registerUser(email: String, password: String, firstName: String,
-                             lastName: String, address: String): Result<UserEntity> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val user = UserEntity(
-                    email = email,
-                    password = password,
-                    firstName = firstName,
-                    lastName = lastName,
-                    address = address
-                )
-                userDao.insertAll(user)
-                Result.success(user)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
+    fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
-    suspend fun loginUser(email: String, password: String): Result<UserEntity> {
-        return withContext(Dispatchers.IO) {
+    suspend fun signIn(email: String, password: String): Result<User> =
+        withContext(Dispatchers.IO) {
             try {
-                val user = userDao.getUserByEmail(email)
-                if (user != null && user.password == password) {
+                val authResult = auth.signInWithEmailAndPassword(email, password).await()
+                val firebaseUser = authResult.user
+
+                if (firebaseUser != null) {
+                    // Convertir en votre modèle User
+                    val user = User(
+                        id = firebaseUser.uid,
+                        email = firebaseUser.email ?: "",
+                        username = firebaseUser.displayName ?: "",
+                        preferences = emptyList(),
+                        favoriteAssociations = emptyList(),
+                        registeredEvents = emptyList()
+                    )
                     Result.success(user)
                 } else {
-                    Result.failure(Exception("Invalid credentials"))
+                    Result.failure(Exception("Authentification échouée"))
                 }
             } catch (e: Exception) {
                 Result.failure(e)
             }
         }
-    }
+
+    suspend fun register(email: String, password: String, username: String, address: String): Result<User> =
+        withContext(Dispatchers.IO) {
+            try {
+                val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+                val firebaseUser = authResult.user
+
+                if (firebaseUser != null) {
+                    // Sauvegarder les infos additionnelles dans Firestore
+                    val userDoc = mapOf(
+                        "uid" to firebaseUser.uid,
+                        "email" to email,
+                        "username" to username,
+                        "address" to address,
+                        "preferences" to emptyList<String>()
+                    )
+
+                    usersCollection.document(firebaseUser.uid).set(userDoc).await()
+
+                    // Créer et retourner le modèle User
+                    val user = User(
+                        id = firebaseUser.uid,
+                        email = email,
+                        username = username,
+                        preferences = emptyList(),
+                        favoriteAssociations = emptyList(),
+                        registeredEvents = emptyList()
+                    )
+                    Result.success(user)
+                } else {
+                    Result.failure(Exception("Inscription échouée"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+    suspend fun resetPassword(email: String): Result<Unit> =
+        withContext(Dispatchers.IO) {
+            try {
+                auth.sendPasswordResetEmail(email).await()
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
+    fun signOut() = auth.signOut()
 }

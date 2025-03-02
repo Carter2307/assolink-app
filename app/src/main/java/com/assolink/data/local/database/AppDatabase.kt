@@ -6,8 +6,9 @@ import com.assolink.data.local.daos.UserDao
 import com.assolink.data.local.entities.UserEntity
 
 @Database(
-    entities = [UserEntity::class], // All entities associated with the DB
-    version = 1
+    entities = [UserEntity::class],
+    version = 1,
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

@@ -3,27 +3,36 @@ package com.assolink.data.local.daos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.assolink.data.local.entities.UserEntity
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM user")
+    @Query("SELECT * FROM users")
     fun getAll(): List<UserEntity>
 
-    @Query("SELECT * FROM user WHERE uid IN (:userIds)")
-    fun loadAllByIds(userIds: IntArray): List<UserEntity>
+    @Query("SELECT * FROM users WHERE id IN (:userIds)")
+    fun loadAllByIds(userIds: List<String>): List<UserEntity>
 
-    @Query("SELECT * FROM user WHERE first_name LIKE :first AND " +
-            "last_name LIKE :last LIMIT 1")
-    fun findByName(first: String, last: String): UserEntity
+    @Query("SELECT * FROM users LIMIT 1")
+    suspend fun getCurrentUser(): UserEntity?
 
-    @Query("SELECT * FROM user WHERE email = :email")
+    @Query("SELECT * FROM users WHERE id = :uid")
+    suspend fun getUserById(uid: String): UserEntity?
+
+    @Query("SELECT * FROM users WHERE email = :email")
     suspend fun getUserByEmail(email: String): UserEntity?
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUser(user: UserEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(vararg users: UserEntity)
 
     @Delete
-    fun delete(user: UserEntity)
+    suspend fun delete(user: UserEntity)
+
+    @Query("DELETE FROM users")
+    suspend fun clearCurrentUser()
 }

@@ -3,7 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.map.secret)
     id("kotlin-parcelize")
-    kotlin("kapt")
+    alias(libs.plugins.google.gms.google.services)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -39,12 +40,8 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
-
-    kapt {
-        correctErrorTypes = true
-    }
-
 }
 
 dependencies {
@@ -57,6 +54,10 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.firebase.auth)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
 
     // TESTING
     testImplementation(libs.junit)
@@ -72,7 +73,6 @@ dependencies {
     // VM & LIFECYCLE
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.kotlinx.coroutines.android)
 
     // DI
     implementation(libs.koin.core)
@@ -86,6 +86,17 @@ dependencies {
 
     // room
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.compiler)
+
+    ksp(libs.androidx.room.compiler.v250)
+
     implementation(libs.androidx.room.ktx)
+
+    // Firebase
+    implementation (platform(libs.firebase.bom))
+    implementation (libs.firebase.auth.ktx)
+    implementation (libs.firebase.firestore.ktx)
+
+    // Coroutines pour Firebase
+    implementation (libs.kotlinx.coroutines.play.services)
+
 }

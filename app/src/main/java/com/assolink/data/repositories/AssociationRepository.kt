@@ -2,7 +2,7 @@ package com.assolink.data.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.assolink.data.model.association.Association
+import com.assolink.data.model.Association
 import com.assolink.network.RetrofitClient
 import com.assolink.network.services.GlobalDataService
 import retrofit2.Call

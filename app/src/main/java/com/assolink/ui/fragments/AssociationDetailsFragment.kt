@@ -14,8 +14,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.assolink.R
-import com.assolink.data.model.association.Association
-import com.assolink.data.model.event.Event
+import com.assolink.data.model.Association
+import com.assolink.data.model.Event
 import com.assolink.ui.viewmodels.AssociationDetailsViewModel
 import com.assolink.ui.adapters.EventAdapter
 import com.bumptech.glide.Glide

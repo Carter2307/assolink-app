@@ -1,15 +1,18 @@
 package com.assolink.data.local.entities
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "user")
+@Entity(tableName = "users")
 data class UserEntity(
-    @PrimaryKey(autoGenerate = true) val uid: Int = 0,
-    @ColumnInfo(name = "email") val email: String?,
-    @ColumnInfo(name = "password") val password: String?,
-    @ColumnInfo(name = "first_name") val firstName: String?,
-    @ColumnInfo(name = "last_name") val lastName: String?,
-    @ColumnInfo(name = "address") val address: String?
+    @PrimaryKey
+    val id: String,
+    val email: String,
+    val username: String,
+    val preferences: String,
+    val favoriteAssociations: String = "",
+    val registeredEvents: String = "",
+    val createdAt: Long? = null,
+    val lastLogin: Long? = null,
+    val isDarkModeEnabled: Boolean? = null
 )

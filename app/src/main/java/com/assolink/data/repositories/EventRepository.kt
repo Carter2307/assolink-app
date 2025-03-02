@@ -1,7 +1,7 @@
 
 package com.assolink.data.repositories
 
-import com.assolink.data.model.event.Event
+import com.assolink.data.model.Event
 import com.assolink.network.services.GlobalDataService
 
 

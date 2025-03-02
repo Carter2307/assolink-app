@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.assolink.R
-import com.assolink.data.model.association.Association
+import com.assolink.data.model.Association
 import com.assolink.ui.activities.AssociationDetailsActivity
 import com.assolink.ui.viewmodels.MapViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
