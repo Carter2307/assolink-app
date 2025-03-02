@@ -1,6 +1,6 @@
 package com.assolink.network.mapper
 
-import com.assolink.data.model.association.Association
+import com.assolink.data.model.Association
 import com.assolink.network.dto.association.AssociationDto
 
 fun mapAssociationDtoToAssociationModel(dto: AssociationDto): Association {

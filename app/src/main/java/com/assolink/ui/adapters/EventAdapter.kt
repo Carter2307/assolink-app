@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.assolink.R
-import com.assolink.data.model.event.Event
+import com.assolink.data.model.Event
 import java.text.SimpleDateFormat
 import java.util.Locale
 

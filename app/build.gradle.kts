@@ -42,6 +42,11 @@ android {
         viewBinding = true
         buildConfig = true
     }
+
+    kapt {
+        correctErrorTypes = true
+    }
+
 }
 
 dependencies {
