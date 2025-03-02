@@ -17,6 +17,9 @@ class ThemeManager(private val context: Context) {
     }
 
     fun setThemeMode(mode: Int) {
+        saveThemeMode(mode)
+
+        // Puis appliquer le mode
         when (mode) {
             MODE_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             MODE_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -28,7 +31,6 @@ class ThemeManager(private val context: Context) {
                 }
             }
         }
-        saveThemeMode(mode)
     }
 
     fun saveThemeMode(mode: Int) {
@@ -47,6 +49,25 @@ class ThemeManager(private val context: Context) {
     }
 
     fun applyTheme() {
-        setThemeMode(getThemeMode())
+        val currentMode = getThemeMode()
+        val isCurrentlyNight = isNightModeActive()
+
+        // Éviter de changer le thème inutilement
+        when (currentMode) {
+            MODE_LIGHT -> {
+                if (isCurrentlyNight) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+            MODE_DARK -> {
+                if (!isCurrentlyNight) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
+            else -> {
+                // Pour le mode système, on laisse Android gérer
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+                }
+            }
+        }
     }
 }

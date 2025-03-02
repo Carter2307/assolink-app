@@ -20,6 +20,7 @@ import com.assolink.ui.fragments.MapFragment
 import com.assolink.ui.fragments.ProfileFragment
 import com.assolink.utils.ThemeManager
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var sharedPref: SharedPreferences
@@ -57,8 +58,37 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Initialisation des boutons de navigation
+        // Initialisation des boutons de navigation et restauration de l'état
         setupNavigation()
+
+        // Vérifier si on doit restaurer un fragment spécifique
+        val navState = getSharedPreferences("navigation_state", Context.MODE_PRIVATE)
+        val lastFragment = navState.getString("current_fragment", null)
+
+        if (lastFragment != null) {
+            when (lastFragment) {
+                "profile" -> {
+                    loadFragment(ProfileFragment())
+                    navProfile.isSelected = true
+                    deselectOtherNavItem(navProfile, getAllBottomNavItems())
+                    // Réinitialiser après la restauration
+                    navState.edit().remove("current_fragment").apply()
+                }
+                "map" -> {
+                    loadFragment(MapFragment())
+                    navMap.isSelected = true
+                    deselectOtherNavItem(navMap, getAllBottomNavItems())
+                    navState.edit().remove("current_fragment").apply()
+                }
+                "event" -> {
+                    loadFragment(EventFragment())
+                    navEvent.isSelected = true
+                    deselectOtherNavItem(navEvent, getAllBottomNavItems())
+                    navState.edit().remove("current_fragment").apply()
+                }
+                // Par défaut, la page d'accueil est déjà chargée dans setupNavigation()
+            }
+        }
     }
 
     private fun setupNavigation() {
@@ -75,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
         val navigationMap = HashMap<LinearLayout, Fragment>().apply {
             put(navHome, HomeFragment())
-            put(navEvent, EventFragment())
+            put(navEvent, EventFragment())  // Renamed to match target architecture
             put(navMap, MapFragment())
             put(navProfile, ProfileFragment())
         }
