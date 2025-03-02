@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Couleurs de base -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="gray">#DFDFDF</color>
-    <color name="link_color">#000000</color>
-    <color name="background_color">#F5F5F5</color>
-    <color name="logout_button_color">#FF5252</color>
+
+    <!-- Nuances de gris -->
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_800">#424242</color>
+    <color name="gray_900">#212121</color>
+
+    <!-- Couleurs sémantiques (mode clair) -->
+    <color name="background_primary">@color/white</color>
+    <color name="background_secondary">@color/gray_100</color>
+    <color name="text_primary">@color/black</color>
+    <color name="text_secondary">@color/gray_700</color>
+    <color name="divider">@color/gray_300</color>
+    <color name="accent">@color/black</color>
+
+    <!-- Couleurs d'état -->
+    <color name="success">#4CAF50</color>
+    <color name="error">#F44336</color>
+    <color name="warning">#FFC107</color>
+    <color name="info">#2196F3</color>
 </resources>

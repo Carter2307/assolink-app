@@ -92,7 +92,7 @@
         android:clickable="true"
         android:focusable="true"
         android:text="@string/forgot_password"
-        android:textColor="@color/link_color"
+        android:textColor="@color/accent"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

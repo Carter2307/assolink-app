@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Couleurs sémantiques (mode sombre) -->
+    <color name="background_primary">@color/black</color>
+    <color name="background_secondary">@color/gray_900</color>
+    <color name="text_primary">@color/white</color>
+    <color name="text_secondary">@color/gray_400</color>
+    <color name="divider">@color/gray_800</color>
+    <color name="accent">@color/white</color>
+</resources>
