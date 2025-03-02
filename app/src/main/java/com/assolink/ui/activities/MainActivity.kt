@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
         val navigationMap = HashMap<LinearLayout, Fragment>().apply {
             put(navHome, HomeFragment())
-            put(navEvent, EventFragment())  // Renamed to match target architecture
+            put(navEvent, EventFragment())
             put(navMap, MapFragment())
             put(navProfile, ProfileFragment())
         }

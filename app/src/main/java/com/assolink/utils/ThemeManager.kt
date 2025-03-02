@@ -19,7 +19,6 @@ class ThemeManager(private val context: Context) {
     fun setThemeMode(mode: Int) {
         saveThemeMode(mode)
 
-        // Puis appliquer le mode
         when (mode) {
             MODE_LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             MODE_DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)

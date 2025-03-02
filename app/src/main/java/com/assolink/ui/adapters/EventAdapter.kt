@@ -1,43 +1,58 @@
+// ui/adapters/EventAdapter.kt
 package com.assolink.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.assolink.R
 import com.assolink.data.model.Event
+import com.assolink.databinding.ItemEventBinding
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
-class EventAdapter : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
-    private var events: List<Event> = emptyList()
+class EventAdapter(
+    private var events: List<Event> = listOf(),
+    private val onEventClick: (Event) -> Unit,
+    private val onRegisterClick: ((Event) -> Unit)? = null
+) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
 
-    fun submitList(newEvents: List<Event>) {
-        events = newEvents
-        notifyDataSetChanged()
-    }
+    class EventViewHolder(val binding: ItemEventBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_event, parent, false)
-        return EventViewHolder(view)
+        val binding = ItemEventBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return EventViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        holder.bind(events[position])
+        val event = events[position]
+
+        with(holder.binding) {
+            eventTitleTextView.text = event.title
+
+            // Formater la date
+            val dateFormat = SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale.getDefault())
+            eventDateTextView.text = dateFormat.format(Date(event.startDate))
+
+            eventLocationTextView.text = event.address
+
+            // Configuration des clics
+            root.setOnClickListener { onEventClick(event) }
+
+            // Si le bouton d'inscription est présent, configurer son action
+            registerButton?.setOnClickListener {
+                onRegisterClick?.invoke(event)
+            }
+        }
     }
 
-    override fun getItemCount() = events.size
+    override fun getItemCount(): Int = events.size
 
-    class EventViewHolder(view: android.view.View) : RecyclerView.ViewHolder(view) {
-        private val titleTextView: android.widget.TextView = view.findViewById(R.id.eventTitleTextView)
-        private val dateTextView: android.widget.TextView = view.findViewById(R.id.eventDateTextView)
-        private val locationTextView: android.widget.TextView = view.findViewById(R.id.eventLocationTextView)
-        private val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-
-        fun bind(event: Event) {
-            titleTextView.text = event.title
-            dateTextView.text = dateFormat.format(event.date)
-            locationTextView.text = event.location
-        }
+    fun updateEvents(newEvents: List<Event>) {
+        this.events = newEvents
+        notifyDataSetChanged()
     }
 }

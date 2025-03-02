@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.assolink.data.model.event.Event
+import com.assolink.data.model.Event
 import com.assolink.data.remote.Result
 import com.assolink.data.repositories.EventRepository
 import com.assolink.data.repositories.RegistrationRepository
