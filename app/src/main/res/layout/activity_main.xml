@@ -2,15 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     android:id="@+id/main">
 
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation"
-        />
+        android:layout_above="@id/bottom_navigation" />
 
     <LinearLayout
         android:id="@+id/bottom_navigation"
@@ -41,13 +40,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Home"
+                android:textColor="@color/text_primary"
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
+
         <!-- Spacer -->
         <View
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
+
         <LinearLayout
             android:id="@+id/nav_event"
             android:layout_width="wrap_content"
@@ -55,8 +57,8 @@
             android:background="@drawable/nav_item_background"
             android:orientation="vertical"
             android:paddingVertical="10dp"
-            android:gravity="center"
-            >
+            android:gravity="center">
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -66,6 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Évènements"
+                android:textColor="@color/text_primary"
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
 
@@ -81,8 +84,8 @@
             android:background="@drawable/nav_item_background"
             android:orientation="vertical"
             android:paddingVertical="10dp"
-            android:gravity="center"
-            >
+            android:gravity="center">
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -92,8 +95,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Carte"
+                android:textColor="@color/text_primary"
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
+
         <View
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -106,8 +111,8 @@
             android:background="@drawable/nav_item_background"
             android:orientation="vertical"
             android:paddingVertical="10dp"
-            android:gravity="center"
-            >
+            android:gravity="center">
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
@@ -117,9 +122,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Profil"
+                android:textColor="@color/text_primary"
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
-
     </LinearLayout>
-
 </RelativeLayout>

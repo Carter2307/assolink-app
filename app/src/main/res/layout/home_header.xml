@@ -22,6 +22,7 @@
                 android:layout_height="36dp"
                 android:layout_gravity="center"
                 android:background="@drawable/rounded_img"
+                app:tint="@color/text_secondary"
                 android:scaleType="centerCrop" />
 
             <View
@@ -38,14 +39,16 @@
                     android:id="@+id/tvFirstName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp"
+                    android:textColor="@color/text_secondary"/>
 
                 <TextView
                     android:id="@+id/tvLastName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
 
             </LinearLayout>
         </LinearLayout>
@@ -55,7 +58,8 @@
             android:layout_height="30dp"
             android:layout_gravity="center"
             android:contentDescription="Bell icon"
-            android:src="@drawable/bell" />
+            android:src="@drawable/bell"
+            app:tint="@color/text_secondary" />
 
     </LinearLayout>
 

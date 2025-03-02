@@ -4,7 +4,7 @@
     <item>
         <shape android:shape="rectangle">
             <gradient
-                android:startColor="#D5000000"
+                android:startColor="@color/accent"
                 android:endColor="#00000000"
                 android:angle="90" />
         </shape>
@@ -14,13 +14,13 @@
         <shape android:shape="line">
             <stroke
                 android:width="2dp"
-                android:color="#C1000000" />
+                android:color="@color/accent" />
         </shape>
     </item>
     <!-- Background Color Layer -->
     <item  android:top="4dp">
         <shape android:shape="rectangle">
-            <solid android:color="#FFFFFF" />
+            <solid android:color="@color/background_primary" />
         </shape>
     </item>
 </layer-list>

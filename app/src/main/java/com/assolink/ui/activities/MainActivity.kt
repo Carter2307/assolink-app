@@ -8,15 +8,17 @@ import android.util.Log
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import com.assolink.AssoLinkApplication
 import com.assolink.R
 import com.assolink.ui.fragments.EventFragment
 import com.assolink.ui.fragments.HomeFragment
 import com.assolink.ui.fragments.MapFragment
 import com.assolink.ui.fragments.ProfileFragment
-
+import com.assolink.utils.ThemeManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,11 +27,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navEvent: LinearLayout
     private lateinit var navMap: LinearLayout
     private lateinit var navProfile: LinearLayout
+    private lateinit var themeManager: ThemeManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Initialiser le thème avant setContentView
+        themeManager = (application as AssoLinkApplication).themeManager
+        themeManager.applyTheme()
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
+        // Activer la teinte des vecteurs
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         // Initialisation des SharedPreferences
         sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)
@@ -38,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         if(!isUserLoggedIn()) {
             Log.d("AUTH_FLOW", "Redirection vers AuthActivity")
             redirectToAuth()
-            return // IMPORTANT : Bloque l'exécution du reste du code
+            return
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -65,7 +75,7 @@ class MainActivity : AppCompatActivity() {
 
         val navigationMap = HashMap<LinearLayout, Fragment>().apply {
             put(navHome, HomeFragment())
-            put(navEvent, EventFragment())  // Renamed to match target architecture
+            put(navEvent, EventFragment())
             put(navMap, MapFragment())
             put(navProfile, ProfileFragment())
         }

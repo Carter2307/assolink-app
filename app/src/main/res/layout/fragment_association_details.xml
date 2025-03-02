@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_primary">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -26,18 +27,20 @@
             android:layout_marginStart="16dp"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:textColor="@color/text_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/logoImageView"
             app:layout_constraintTop_toTopOf="@id/logoImageView"
-            tools:text="Nom de l'association" />
+            tools:text="Nom de l/'association" />
 
         <TextView
             android:id="@+id/addressTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:drawableStart="@drawable/ic_location"
             android:drawablePadding="8dp"
+            android:textColor="@color/text_secondary"
+            app:drawableStartCompat="@drawable/ic_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/nameTextView"
             app:layout_constraintTop_toBottomOf="@id/nameTextView"
@@ -48,9 +51,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Description"
+            android:text="@string/description"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/text_primary"
             app:layout_constraintTop_toBottomOf="@id/logoImageView" />
 
         <TextView
@@ -58,8 +62,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:textColor="@color/text_secondary"
             app:layout_constraintTop_toBottomOf="@id/descriptionTitle"
-            tools:text="Description détaillée de l'association..." />
+            tools:text="Description détaillée de l/'association..." />
 
         <LinearLayout
             android:id="@+id/buttonsLayout"
@@ -76,7 +81,8 @@
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:drawableStart="@drawable/ic_email"
-                android:text="Email" />
+                android:text="@string/email"
+                android:backgroundTint="@color/accent" />
 
             <Button
                 android:id="@+id/phoneButton"
@@ -86,7 +92,8 @@
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
                 android:drawableStart="@drawable/ic_phone"
-                android:text="Appeler" />
+                android:text="Appeler"
+                android:backgroundTint="@color/accent" />
 
             <Button
                 android:id="@+id/shareButton"
@@ -95,7 +102,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
                 android:drawableStart="@drawable/ic_share"
-                android:text="Partager" />
+                android:text="Partager"
+                android:backgroundTint="@color/accent" />
         </LinearLayout>
 
         <TextView
@@ -106,6 +114,7 @@
             android:text="Événements à venir"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/text_primary"
             app:layout_constraintTop_toBottomOf="@id/buttonsLayout" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -125,6 +134,7 @@
             android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="Aucun événement à venir"
+            android:textColor="@color/text_secondary"
             android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/eventsTitle" />
 

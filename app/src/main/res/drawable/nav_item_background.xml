@@ -6,7 +6,7 @@
             <item android:gravity="top">
                 <shape android:shape="rectangle">
                     <size android:height="2dp" />
-                    <solid android:color="#000000" />
+                    <solid android:color="@color/accent" />
                 </shape>
             </item>
         </layer-list>
@@ -16,7 +16,7 @@
             <item android:gravity="top">
                 <shape android:shape="rectangle">
                     <size android:height="2dp" />
-                    <solid android:color="@color/white" />
+                    <solid android:color="@color/background_primary" />
                 </shape>
             </item>
         </layer-list>
