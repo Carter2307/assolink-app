@@ -12,6 +12,7 @@ class EventRepository(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
     private val eventsCollection = firestore.collection("events")
+
     suspend fun getEventsByAssociation(associationId: String): Result<List<Event>> =
         withContext(Dispatchers.IO) {
             try {
@@ -20,6 +21,7 @@ class EventRepository(
                     .orderBy("startDate", Query.Direction.ASCENDING)
                     .get()
                     .await()
+
                 val events = snapshot.documents.mapNotNull { document ->
                     document.toObject(Event::class.java)?.copy(id = document.id)
                 }
@@ -28,6 +30,7 @@ class EventRepository(
                 Result.failure(e)
             }
         }
+
     suspend fun getUpcomingEvents(): Result<List<Event>> =
         withContext(Dispatchers.IO) {
             try {
@@ -35,9 +38,10 @@ class EventRepository(
                 val snapshot = eventsCollection
                     .whereGreaterThan("startDate", currentTime)
                     .orderBy("startDate", Query.Direction.ASCENDING)
-                    .limit(20) // Limiter le nombre d'événements pour des raisons de performance
+                    .limit(20) // Limiter pour des raisons de performance
                     .get()
                     .await()
+
                 val events = snapshot.documents.mapNotNull { document ->
                     document.toObject(Event::class.java)?.copy(id = document.id)
                 }
@@ -46,6 +50,7 @@ class EventRepository(
                 Result.failure(e)
             }
         }
+
     suspend fun getEventById(id: String): Result<Event> =
         withContext(Dispatchers.IO) {
             try {
@@ -64,44 +69,63 @@ class EventRepository(
                 Result.failure(e)
             }
         }
+
     suspend fun registerUserForEvent(eventId: String, userId: String): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
                 val eventRef = eventsCollection.document(eventId)
+
                 firestore.runTransaction { transaction ->
                     val snapshot = transaction.get(eventRef)
                     val event = snapshot.toObject(Event::class.java)
+
                     if (event == null) {
                         throw Exception("Événement non trouvé")
                     }
+
                     if (event.participants.contains(userId)) {
                         throw Exception("Utilisateur déjà inscrit")
                     }
+
                     if (event.maxParticipants != null && event.participants.size >= event.maxParticipants) {
                         throw Exception("L'événement est complet")
                     }
-                    transaction.update(eventRef, "participants", event.participants + userId)
+
+                    val updatedParticipants = event.participants.toMutableList()
+                    updatedParticipants.add(userId)
+
+                    transaction.update(eventRef, "participants", updatedParticipants)
                 }.await()
+
                 Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)
             }
         }
+
     suspend fun unregisterUserFromEvent(eventId: String, userId: String): Result<Unit> =
         withContext(Dispatchers.IO) {
             try {
                 val eventRef = eventsCollection.document(eventId)
+
                 firestore.runTransaction { transaction ->
                     val snapshot = transaction.get(eventRef)
                     val event = snapshot.toObject(Event::class.java)
+
                     if (event == null) {
                         throw Exception("Événement non trouvé")
                     }
+
                     if (!event.participants.contains(userId)) {
                         throw Exception("Utilisateur non inscrit")
                     }
-                    transaction.update(eventRef, "participants", event.participants - userId)
+
+                    val updatedParticipants = event.participants.toMutableList()
+                    updatedParticipants.remove(userId)
+
+                    transaction.update(eventRef, "participants", updatedParticipants)
                 }.await()
+
                 Result.success(Unit)
             } catch (e: Exception) {
                 Result.failure(e)

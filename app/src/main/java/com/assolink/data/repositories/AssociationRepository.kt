@@ -13,7 +13,7 @@ class AssociationRepository(
 ) {
     private val associationsCollection = firestore.collection("associations")
 
-    suspend fun getAllAssociations(): Result<List<Association>> =
+    suspend fun getAllAssociations(forceRefresh: Boolean): Result<List<Association>> =
         withContext(Dispatchers.IO) {
             try {
                 val snapshot = associationsCollection.get().await()
@@ -26,7 +26,7 @@ class AssociationRepository(
             }
         }
 
-    suspend fun getAssociationById(id: String): Result<Association> =
+    suspend fun getAssociationById(id: String, forceRefresh: Boolean): Result<Association> =
         withContext(Dispatchers.IO) {
             try {
                 val document = associationsCollection.document(id).get().await()
@@ -52,6 +52,7 @@ class AssociationRepository(
                     .whereEqualTo("category", category)
                     .get()
                     .await()
+
                 val associations = snapshot.documents.mapNotNull { document ->
                     document.toObject(Association::class.java)?.copy(id = document.id)
                 }
@@ -67,19 +68,23 @@ class AssociationRepository(
                 if (favoriteIds.isEmpty()) {
                     return@withContext Result.success(emptyList())
                 }
+
                 // Firebase permet un maximum de 10 valeurs dans une requête "in"
                 val chunkedIds = favoriteIds.chunked(10)
                 val allAssociations = mutableListOf<Association>()
+
                 for (chunk in chunkedIds) {
                     val snapshot = associationsCollection
                         .whereIn("id", chunk)
                         .get()
                         .await()
+
                     val associations = snapshot.documents.mapNotNull { document ->
                         document.toObject(Association::class.java)?.copy(id = document.id)
                     }
                     allAssociations.addAll(associations)
                 }
+
                 Result.success(allAssociations)
             } catch (e: Exception) {
                 Result.failure(e)
@@ -89,16 +94,17 @@ class AssociationRepository(
     suspend fun searchAssociations(query: String): Result<List<Association>> =
         withContext(Dispatchers.IO) {
             try {
-                // Firebase ne supporte pas les recherches textuelles natives,
-                // donc nous utilisons une approche simple de préfixe
+                // Firebase ne supporte pas les recherches textuelles natives
                 val startAt = query.lowercase()
                 val endAt = startAt + '\uf8ff' // caractère Unicode élevé
+
                 val snapshot = associationsCollection
                     .orderBy("name", Query.Direction.ASCENDING)
                     .startAt(startAt)
                     .endAt(endAt)
                     .get()
                     .await()
+
                 val associations = snapshot.documents.mapNotNull { document ->
                     document.toObject(Association::class.java)?.copy(id = document.id)
                 }
