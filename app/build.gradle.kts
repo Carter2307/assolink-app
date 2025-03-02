@@ -43,10 +43,6 @@ android {
         buildConfig = true
     }
 
-    kapt {
-        correctErrorTypes = true
-    }
-
 }
 
 dependencies {
