@@ -1,6 +1,7 @@
- package com.assolink.data.model
+package com.assolink.data.model
 
 import com.google.firebase.firestore.GeoPoint
+
 import java.io.Serializable
 
 data class Association(

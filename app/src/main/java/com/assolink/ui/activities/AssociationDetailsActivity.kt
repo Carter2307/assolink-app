@@ -8,10 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.assolink.R
 import com.assolink.ui.viewmodels.AssociationDetailsViewModel
 import com.assolink.ui.fragments.AssociationDetailsFragment
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AssociationDetailsActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: AssociationDetailsViewModel
+    private val viewModel: AssociationDetailsViewModel by viewModel()
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,8 +20,6 @@ class AssociationDetailsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_association_details)
 
         progressBar = findViewById(R.id.progressBar)
-
-        viewModel = AssociationDetailsViewModel()
 
         // Récupérer l'ID de l'association depuis l'intent
         val associationId = intent.getStringExtra("ASSOCIATION_ID")
