@@ -1,5 +1,6 @@
 package com.assolink.data.repositories
 
+import com.assolink.data.local.daos.EventDao
 import com.assolink.data.model.Event
 import com.assolink.data.remote.Result
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,7 +10,8 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class EventRepository(
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val eventDao: EventDao
 ) {
     private val eventsCollection = firestore.collection("events")
 

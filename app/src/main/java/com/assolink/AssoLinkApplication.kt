@@ -1,6 +1,7 @@
 package com.assolink
 
 import android.app.Application
+import android.util.Log
 import com.assolink.di.coreModule
 import com.assolink.di.databaseModule
 import com.assolink.di.remoteModule
@@ -23,10 +24,20 @@ class AssoLinkApplication : Application() {
         // Initialiser Firebase
         FirebaseApp.initializeApp(this)
 
-        // Configuration pour le mode hors ligne Firestore
         val settings = FirebaseFirestoreSettings.Builder()
             .build()
         FirebaseFirestore.getInstance().firestoreSettings = settings
+
+        FirebaseFirestore.getInstance().collection("associations").get()
+            .addOnSuccessListener {
+                Log.d("FirestoreTest", "Connexion réussie! Nombre d'associations: ${it.size()}")
+                for (doc in it.documents) {
+                    Log.d("FirestoreTest", "Association: ${doc.id} - ${doc.getString("name")}")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("FirestoreTest", "Erreur de connexion à Firestore", e)
+            }
 
         // Démarrer Koin (CRUCIAL)
         startKoin {

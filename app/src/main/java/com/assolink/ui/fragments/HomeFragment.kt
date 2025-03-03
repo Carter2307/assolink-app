@@ -39,6 +39,9 @@ class HomeFragment : Fragment() {
         setupObservers()
         setupSearchBar()
 
+        // Afficher les squelettes pendant le chargement
+        showSkeletons(true)
+
         // Charger les données
         viewModel.loadHomeData()
     }
@@ -89,9 +92,11 @@ class HomeFragment : Fragment() {
         // Observer pour les associations favorites
         viewModel.favoriteAssociations.observe(viewLifecycleOwner) { associations ->
             if (associations.isEmpty()) {
-                binding.favoriteAssociationsSection.visibility = View.GONE
+                binding.favoritesTitleTextView.visibility = View.GONE
+                binding.favoriteAssociationsRecyclerView.visibility = View.GONE
             } else {
-                binding.favoriteAssociationsSection.visibility = View.VISIBLE
+                binding.favoritesTitleTextView.visibility = View.VISIBLE
+                binding.favoriteAssociationsRecyclerView.visibility = View.VISIBLE
                 favoriteAssociationsAdapter.updateAssociations(associations)
             }
         }
@@ -99,9 +104,11 @@ class HomeFragment : Fragment() {
         // Observer pour les événements à venir
         viewModel.upcomingEvents.observe(viewLifecycleOwner) { events ->
             if (events.isEmpty()) {
-                binding.upcomingEventsSection.visibility = View.GONE
+                binding.eventsTitleTextView.visibility = View.GONE
+                binding.upcomingEventsRecyclerView.visibility = View.GONE
             } else {
-                binding.upcomingEventsSection.visibility = View.VISIBLE
+                binding.eventsTitleTextView.visibility = View.VISIBLE
+                binding.upcomingEventsRecyclerView.visibility = View.VISIBLE
                 upcomingEventsAdapter.updateEvents(events)
             }
         }
@@ -109,16 +116,19 @@ class HomeFragment : Fragment() {
         // Observer pour les associations recommandées
         viewModel.recommendedAssociations.observe(viewLifecycleOwner) { associations ->
             if (associations.isEmpty()) {
-                binding.recommendedAssociationsSection.visibility = View.GONE
+                binding.recommendedTitleTextView.visibility = View.GONE
+                binding.recommendedAssociationsRecyclerView.visibility = View.GONE
             } else {
-                binding.recommendedAssociationsSection.visibility = View.VISIBLE
+                binding.recommendedTitleTextView.visibility = View.VISIBLE
+                binding.recommendedAssociationsRecyclerView.visibility = View.VISIBLE
                 recommendedAssociationsAdapter.updateAssociations(associations)
             }
         }
 
         // Observer pour le chargement
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            binding.progressBar.visibility = View.GONE // Toujours cacher le progressBar
+            showSkeletons(isLoading) // Afficher/cacher les squelettes selon l'état
         }
 
         // Observer pour les erreurs
@@ -130,6 +140,23 @@ class HomeFragment : Fragment() {
                 viewModel.clearError()
             }
         }
+    }
+
+    private fun showSkeletons(show: Boolean) {
+        // Visibilité des skeletons
+        binding.favoriteSkeletonScrollView.visibility = if (show) View.VISIBLE else View.GONE
+        binding.eventsSkeletonLayout.visibility = if (show) View.VISIBLE else View.GONE
+        binding.recommendedSkeletonScrollView.visibility = if (show) View.VISIBLE else View.GONE
+
+        // Visibilité inverse pour les contenus réels
+        binding.favoriteAssociationsRecyclerView.visibility = if (show) View.GONE else View.VISIBLE
+        binding.upcomingEventsRecyclerView.visibility = if (show) View.GONE else View.VISIBLE
+        binding.recommendedAssociationsRecyclerView.visibility = if (show) View.GONE else View.VISIBLE
+
+        // Visibilité des titres
+        binding.favoritesTitleTextView.visibility = if (show) View.VISIBLE else View.GONE
+        binding.eventsTitleTextView.visibility = if (show) View.VISIBLE else View.GONE
+        binding.recommendedTitleTextView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun setupSearchBar() {

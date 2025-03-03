@@ -4,9 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.assolink.databinding.ActivityAuthBinding
-import com.assolink.ui.viewmodels.AuthState
 import com.assolink.ui.viewmodels.AuthViewModel
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

@@ -33,9 +33,9 @@ val coreModule = module {
     viewModel { HomeViewModel(associationRepository = get(), eventRepository = get(), userRepository = get()) }
 
     // Repositories
-    single { AssociationRepository(get()) }
-    single { UserRepository(get(), get(), get ()) }
-    single { EventRepository(get()) }
+    single { UserRepository(context = androidContext()) }
+    single { AssociationRepository(firestore = get(), associationDao = get()) }
+    single { EventRepository(firestore = get(), eventDao = get()) }
     single { RegistrationRepository(firestore = get()) }
 
     // Utils

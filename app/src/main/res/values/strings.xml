@@ -49,4 +49,9 @@
     <string name="description">Description</string>
     <string name="logo">Logo</string>
     <string name="s_inscrire">S\'inscrire</string>
+    <string name="vos_favoris">Vos favoris</string>
+    <string name="v_nements_venir">Événements à venir</string>
+    <string name="recommandations">Recommandations</string>
+    <string name="vos_favoris_scroll">Vos favoris</string>
+    <string name="recommandations_scroll">Liste associations recommandées</string>
 </resources>

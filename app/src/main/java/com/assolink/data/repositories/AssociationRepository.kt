@@ -1,27 +1,76 @@
 package com.assolink.data.repositories
 
+import android.util.Log
+import com.assolink.data.local.daos.AssociationDao
+import com.assolink.data.local.mapper.EntityMappers
 import com.assolink.data.model.Association
 import com.assolink.data.remote.Result
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class AssociationRepository(
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val associationDao: AssociationDao
 ) {
     private val associationsCollection = firestore.collection("associations")
 
-    suspend fun getAllAssociations(forceRefresh: Boolean): Result<List<Association>> =
+    // Dans AssociationRepository
+    suspend fun getAllAssociations(forceRefresh: Boolean = false): Result<List<Association>> =
         withContext(Dispatchers.IO) {
             try {
-                val snapshot = associationsCollection.get().await()
-                val associations = snapshot.documents.mapNotNull { document ->
-                    document.toObject(Association::class.java)?.copy(id = document.id)
+                Log.d("Repository", "Début de getAllAssociations(forceRefresh=$forceRefresh)")
+
+                // Essayer le cache local d'abord
+                if (!forceRefresh) {
+                    val localAssociations = associationDao.getAllAssociations()
+                    Log.d("Repository", "Associations locales: ${localAssociations.size}")
+                    if (localAssociations.isNotEmpty()) {
+                        val mappedAssociations = localAssociations.map { EntityMappers.mapEntityToAssociation(it) }
+                        Log.d("Repository", "Retourne ${mappedAssociations.size} associations depuis le cache")
+                        return@withContext Result.success(mappedAssociations)
+                    }
                 }
+
+                // Sinon, récupérer depuis Firestore
+                Log.d("Repository", "Récupération depuis Firestore...")
+                val snapshot = associationsCollection.get().await()
+                Log.d("Repository", "Réponse Firestore reçue: ${snapshot.documents.size} documents")
+
+                val associations = snapshot.documents.mapNotNull { document ->
+                    try {
+                        val association = document.toObject(Association::class.java)?.copy(id = document.id)
+                        Log.d("Repository", "Association mappée: ${association?.name}")
+                        association
+                    } catch (e: Exception) {
+                        Log.e("Repository", "Erreur de mapping pour ${document.id}", e)
+                        null
+                    }
+                }
+
+                // Mettre en cache
+                val entities = associations.map { EntityMappers.mapAssociationToEntity(it) }
+                Log.d("Repository", "Mise en cache de ${entities.size} associations")
+                associationDao.insertAssociations(entities)
+
+                Log.d("Repository", "Retourne ${associations.size} associations depuis Firestore")
                 Result.success(associations)
             } catch (e: Exception) {
+                Log.e("Repository", "Erreur dans getAllAssociations", e)
+
+                // En cas d'erreur, essayer de récupérer du cache
+                try {
+                    val localAssociations = associationDao.getAllAssociations()
+                    if (localAssociations.isNotEmpty()) {
+                        val mappedAssociations = localAssociations.map { EntityMappers.mapEntityToAssociation(it) }
+                        Log.d("Repository", "Fallback: retourne ${mappedAssociations.size} associations depuis le cache")
+                        return@withContext Result.success(mappedAssociations)
+                    }
+                } catch (cacheError: Exception) {
+                    Log.e("Repository", "Erreur de fallback vers le cache", cacheError)
+                }
+
                 Result.failure(e)
             }
         }
@@ -94,22 +143,48 @@ class AssociationRepository(
     suspend fun searchAssociations(query: String): Result<List<Association>> =
         withContext(Dispatchers.IO) {
             try {
-                // Firebase ne supporte pas les recherches textuelles natives
-                val startAt = query.lowercase()
-                val endAt = startAt + '\uf8ff' // caractère Unicode élevé
+                Log.d("Repository", "Recherche d'associations: '$query'")
 
-                val snapshot = associationsCollection
-                    .orderBy("name", Query.Direction.ASCENDING)
-                    .startAt(startAt)
-                    .endAt(endAt)
+                if (query.isBlank()) {
+                    return@withContext getAllAssociations()
+                }
+
+                // Firebase ne supporte pas les recherches textuelles complètes
+                // On utilise une méthode alternative avec plusieurs champs
+                val lowerQuery = query.lowercase()
+
+                // Créer plusieurs requêtes pour différents champs
+                val nameStartsWithQuery = associationsCollection
+                    .orderBy("name")
+                    .startAt(lowerQuery)
+                    .endAt(lowerQuery + '\uf8ff')
                     .get()
                     .await()
 
-                val associations = snapshot.documents.mapNotNull { document ->
-                    document.toObject(Association::class.java)?.copy(id = document.id)
+                val categoryEqualsQuery = associationsCollection
+                    .whereEqualTo("category", query)
+                    .get()
+                    .await()
+
+                // Combiner les résultats
+                val resultMap = mutableMapOf<String, Association>()
+
+                nameStartsWithQuery.documents.forEach { doc ->
+                    doc.toObject(Association::class.java)?.copy(id = doc.id)?.let {
+                        resultMap[doc.id] = it
+                    }
                 }
-                Result.success(associations)
+
+                categoryEqualsQuery.documents.forEach { doc ->
+                    doc.toObject(Association::class.java)?.copy(id = doc.id)?.let {
+                        resultMap[doc.id] = it
+                    }
+                }
+
+                Log.d("Repository", "Recherche terminée: ${resultMap.size} résultats")
+                Result.success(resultMap.values.toList())
             } catch (e: Exception) {
+                Log.e("Repository", "Erreur de recherche: ${e.message}", e)
                 Result.failure(e)
             }
         }

@@ -10,7 +10,7 @@ data class Association(
     val description: String = "",
     val category: String = "",
     val address: String = "",
-    val location: GeoPoint? = null,
+    @field:JvmField val location: GeoPoint? = null,
     val contactEmail: String = "",
     val contactPhone: String = "",
     val website: String? = null,

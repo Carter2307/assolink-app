@@ -71,23 +71,28 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(ProfileFragment())
                     navProfile.isSelected = true
                     deselectOtherNavItem(navProfile, getAllBottomNavItems())
-                    // Réinitialiser après la restauration
-                    navState.edit().remove("current_fragment").apply()
-                }
-                "map" -> {
-                    loadFragment(MapFragment())
-                    navMap.isSelected = true
-                    deselectOtherNavItem(navMap, getAllBottomNavItems())
-                    navState.edit().remove("current_fragment").apply()
                 }
                 "event" -> {
                     loadFragment(EventFragment())
                     navEvent.isSelected = true
                     deselectOtherNavItem(navEvent, getAllBottomNavItems())
-                    navState.edit().remove("current_fragment").apply()
                 }
-                // Par défaut, la page d'accueil est déjà chargée dans setupNavigation()
+                "map" -> {
+                    loadFragment(MapFragment())
+                    navMap.isSelected = true
+                    deselectOtherNavItem(navMap, getAllBottomNavItems())
+                }
+                else -> {
+                    loadFragment(HomeFragment())
+                    navHome.isSelected = true
+                    deselectOtherNavItem(navHome, getAllBottomNavItems())
+                }
             }
+            navState.edit().remove("current_fragment").apply()
+        } else {
+            loadFragment(HomeFragment())
+            navHome.isSelected = true
+            deselectOtherNavItem(navHome, getAllBottomNavItems())
         }
     }
 
@@ -98,7 +103,7 @@ class MainActivity : AppCompatActivity() {
         navMap = findViewById(R.id.nav_map)
         navProfile = findViewById(R.id.nav_profil)
 
-        // Charge la page par défaut (la home page)
+
         loadFragment(HomeFragment())
         navHome.isSelected = true
         deselectOtherNavItem(navHome, getAllBottomNavItems())
