@@ -10,6 +10,7 @@ import com.assolink.ui.fragments.MapFragment
 import com.assolink.ui.fragments.AssociationDetailsFragment
 import com.assolink.ui.viewmodels.AuthViewModel
 import com.assolink.ui.viewmodels.EventsViewModel
+import com.assolink.ui.viewmodels.HomeViewModel
 import com.assolink.ui.viewmodels.ProfileViewModel
 import com.assolink.utils.ThemeManager
 import org.koin.android.ext.koin.androidContext
@@ -29,6 +30,7 @@ val coreModule = module {
     viewModel { EventsViewModel(eventRepository = get(), registrationRepository = get(), userRepository = get()) }
     viewModel { MapViewModel(associationRepository = get()) }
     viewModel { AssociationDetailsViewModel(associationRepository = get(), eventRepository = get()) }
+    viewModel { HomeViewModel(associationRepository = get(), eventRepository = get(), userRepository = get()) }
 
     // Repositories
     single { AssociationRepository(get()) }

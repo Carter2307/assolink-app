@@ -1,6 +1,6 @@
 package com.assolink.data.repositories
 
-import com.assolink.data.model.association.Association
+import com.assolink.data.model.Association
 import com.assolink.data.remote.Result
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
