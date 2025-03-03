@@ -23,7 +23,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.login)
+        setContentView(R.layout.activity_login)
 
         // Initialisation des SharedPreferences
         sharedPref = getSharedPreferences("user_session", Context.MODE_PRIVATE)

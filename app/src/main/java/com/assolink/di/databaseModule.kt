@@ -1,18 +1,26 @@
 package com.assolink.di
 
+import android.app.Application
 import androidx.room.Room
 import com.assolink.data.local.database.AppDatabase
-import org.koin.android.ext.koin.androidContext
+import com.assolink.data.local.daos.UserDao
+import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
 val databaseModule = module {
-    single {
-        Room.databaseBuilder(
-            androidContext(),
-            AppDatabase::class.java,
-            "assolink"
-        ).build()
-    }
+    single { provideDatabase(androidApplication()) }
+    single { provideUserDao(get()) }
+}
 
-    single { get<AppDatabase>().userDao() }
+private fun provideDatabase(application: Application): AppDatabase {
+    return Room.databaseBuilder(
+        application.applicationContext,
+        AppDatabase::class.java,
+        "assolink_database"
+    )
+        .build()
+}
+
+private fun provideUserDao(database: AppDatabase): UserDao {
+    return database.userDao()
 }
